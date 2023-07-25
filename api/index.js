@@ -2,15 +2,17 @@ const express = require('express');
 const cors = require('cors');
 const  User = require('./models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 require('./data');
 
 const server = express();
 const bcryptSalt = bcrypt.genSaltSync(10);
+const jwtSecret = "dfbnijbsvf19f41f4f487484f%$441g8f$";
 
 server.use(cors());
 server.use(express.json());
-
-
+server.use(cookieParser());
 
 server.post('/register',async (req,res)=>{
     const {name,email,password} = req.body.user
@@ -27,22 +29,40 @@ server.post('/register',async (req,res)=>{
 })
 
 server.post('/login', async (req, res)=>{
-    const {email,password} = req.body.user;
-    const userDoc = await User.findOne({email})
-    if(userDoc){
-        res.json({success: true, message: userDoc})
-        const passOk = bcrypt.compareSync(password,userDoc.password);
-        if(passOk){
-            res.status(400).json({success: true, message:"credentials are correct"});
+    try{
+        const {email,password} = req.body.user;
+        const userDoc = await User.findOne({email})
+        if(userDoc){
+            const passOk = bcrypt.compareSync(password.toString(),userDoc.password);
+            if(passOk){
+                jwt.sign({email:userDoc.email,id:userDoc._id,name:userDoc.name},jwtSecret,{},(err,token)=>{
+                    if(err) throw err;
+                    res.cookie('token',token).json({success: true, data:userDoc,token:token});
+                })
+            }else{
+                res.status(422).json({success: false, message:"credentials are not correct"});
+            }
         }else{
-            res.status(422).json({success: false, message:"credentials are not correct"});
+            res.status(404).json({success: false, message:"not found"})
         }
-    }else{
-        res.status(404).json({success: false, message:"not found"})
+    }catch(err){
+        console.log("error login :: ",err);
     }
-
 })
 
-server.listen(5000,()=>{
+server.post('/profile', (req,res)=>{
+    // const {token} = req.cookies;
+    const {token} =  req.body;
+    console.log(token);
+    console.log("token :: ",token);
+    if(token){
+        jwt.verify(token,jwtSecret,{},(err, user)=>{
+            if(err) throw err;
+            res.json(user);
+        })
+    }
+});
+
+server.listen(5500,()=>{
     console.log("listening on 5000")
 })

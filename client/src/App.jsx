@@ -5,9 +5,11 @@ import LoginPage from './pages/LoginPage';
 import Layout from './layout';
 import RegisterPage from './pages/RegisterPage';
 import axios from 'axios';
-axios.defaults.baseURL = "http://localhost:5000";
+import AccountPage from './pages/AccountPage';
+axios.defaults.baseURL = "http://127.0.0.1:5500";
 
 const App = () => {
+
   return (
     <BrowserRouter>
       <Routes>
@@ -15,8 +17,8 @@ const App = () => {
           <Route path='/' element={<IndexPage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
+          <Route path='/account/:subpage?' element={<AccountPage />} />
         </Route>
-
       </Routes>
     </BrowserRouter>
   )

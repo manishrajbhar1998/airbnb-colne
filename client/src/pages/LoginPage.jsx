@@ -1,6 +1,7 @@
 import axios from 'axios'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/UserContext'
 
 const LoginPage = () => {
 
@@ -8,7 +9,8 @@ const LoginPage = () => {
     email:"",
     password:""
   })
-
+  const  {setUser} = useContext(UserContext);
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const {value,name} = e.target;
     setuser((prev)=>({
@@ -16,14 +18,28 @@ const LoginPage = () => {
       [name] : value
     }))
   }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
-      const {data} = await axios.post("/login",{user})
+      const {data:{data,token}} = await axios.post("/login",{user});
+      console.log(data,token);
+      setSessionWithTime("airbndUser",token,10);
+      setUser(data)
+      navigate('/')
     }catch(err){
+      console.error("err ::",err)
+      alert("Wrong credentials")
     }
   }
+  const setSessionWithTime = (key,value,time) => {
+    const currentTime = new Date().getTime();
+    const expirationTime = currentTime + time * 1000;
+    const sessionObjection = {token:value,expirationTime};
+    sessionStorage.setItem(key,JSON.stringify(sessionObjection));
+  }
+
+  
+
   return (
     <div className='mt-10 flex items-center justify-around'>
       <div>
