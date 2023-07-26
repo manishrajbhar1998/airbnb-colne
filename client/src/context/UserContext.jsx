@@ -12,11 +12,13 @@ const UserContextProvider = ({children}) => {
 
     const fetchCookieData = async () => {
         if(!user){
+            setIsReady(true)
             const sessionData = JSON.parse(sessionStorage.getItem("airbndUser"));
             console.log("value ",sessionData?.token);
             const {data} = await axios.post('/profile',{token:sessionData?.token});
             setUser(data);
-            setIsReady(true)
+            setIsReady(false)
+
         }
     }
     return (

@@ -53,8 +53,6 @@ server.post('/login', async (req, res)=>{
 server.post('/profile', (req,res)=>{
     // const {token} = req.cookies;
     const {token} =  req.body;
-    console.log(token);
-    console.log("token :: ",token);
     if(token){
         jwt.verify(token,jwtSecret,{},(err, user)=>{
             if(err) throw err;

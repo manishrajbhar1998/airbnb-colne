@@ -6,6 +6,7 @@ import Layout from './layout';
 import RegisterPage from './pages/RegisterPage';
 import axios from 'axios';
 import AccountPage from './pages/AccountPage';
+import PlacesPage from './pages/PlacesPage';
 axios.defaults.baseURL = "http://127.0.0.1:5500";
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/account/:subpage?' element={<AccountPage />} />
+          <Route path='/account/:subpage/:actionOrId' element={<AccountPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
